@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       # Setup Java environment in order to build the Android app.
       - uses: actions/setup-java@v1
@@ -37,28 +37,24 @@ jobs:
 
       # Get flutter dependencies.
       - run: flutter pub get
-
-      # Check for any formatting issues in the code.
-      - run: flutter format --set-exit-if-changed .
-
-      # Statically analyze the Dart code for any errors.
-      - run: flutter analyze .
-
-      # Run widget tests for our flutter project.
-      # - run: flutter test
+      
+      # He said to do this
+      - run: flutter --enable-linux-desktop
 
       # Build apk.
-      - run: flutter build apk --release
+      - run: flutter build linux
+  
+  release:
+    name: compress and release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: compress
+        run: zip -r build/bh-linux.zip build/linux
+      - name: release
+        run: hub release create build/bh-linux.zip -m "UwU" -t master "linux"
+ 
 
-      # Upload generated apk to the artifacts.
-      - uses: actions/upload-artifact@v1
-        with:
-          name: app-release.apk
-          path: build/app/outputs/apk/release/app-release.apk
-      
-      - name: Commit on Telegram
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: A new commit has been pushed to BlackHole by ${{ github.event.head_commit.author.name }}. Commit message- ${{ github.event.head_commit.message }}
+   
