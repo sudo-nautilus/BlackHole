@@ -38,9 +38,6 @@ jobs:
       # Get flutter dependencies.
       - run: flutter pub get
       
-      # He said to do this
-      - run: flutter --enable-linux-desktop
-
       # Build apk.
       - run: flutter build linux
   
