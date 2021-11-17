@@ -38,8 +38,10 @@ jobs:
       # Get flutter dependencies.
       - run: flutter pub get
       
-      # Build apk.
-      - run: flutter build linux
+      # Build.
+      - run: |
+          flutter config --enable-linux-desktop
+          flutter build linux
   
   release:
     name: compress and release
